@@ -17,8 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.nicolas.firebaseapp.model.Upload;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
@@ -30,6 +33,10 @@ public class StorageActivity extends AppCompatActivity {
     private ImageView imageView;
     private Uri imageUri = null;
     private EditText editNome;
+
+    //referencia para o nó RealtimeDB
+    private DatabaseReference database = FirebaseDatabase.getInstance()
+                                        .getReference("uploads");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +51,10 @@ public class StorageActivity extends AppCompatActivity {
 
         btnGaleria.setOnClickListener( v ->{
             Intent intent = new Intent();
-            // Intent Implicita ->
+            // Intent Implicita -> pegar uma arquivo do celular
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
+            // incia uma Activity, e espera um retorno(foto)
             startActivityForResult(intent,111);
 
         });
@@ -69,14 +77,37 @@ public class StorageActivity extends AppCompatActivity {
         String tipo = getFileExtension(imageUri);
         //refencia do arquivo Firebase
         Date d = new Date();
-        String nome = editNome.getText().toString()+"-"+d.getTime();
-        StorageReference imagemRef = storage.getReference().
-                                        child("imagens/"+nome+"."+tipo);
+        String nome = editNome.getText().toString();
 
+        // criando uma referencia p/ imagem no Storage
+        StorageReference imagemRef = storage.getReference().
+                                        child("imagens/"+nome+"-"+d.getTime()+"."+tipo);
+        // realiza o upload da imagem
         imagemRef.putFile(imageUri)
         .addOnSuccessListener(taskSnapshot -> {
             Toast.makeText(this,"UPLOAD FEITO COM SUCESSO MEU PIT",
                                                 Toast.LENGTH_SHORT).show();
+
+            //Inserir od dados da imagem no RealtimeDatabase
+
+            //pegar  a Url da imagem
+            taskSnapshot.getStorage().getDownloadUrl()
+                    .addOnSuccessListener(uri -> {
+                       // inserir no database
+
+                        //criando refrencia(database) do upload
+                        DatabaseReference refUpload = database.push();
+                        String id = refUpload.getKey();
+
+                        Upload upload = new Upload(id,nome,uri.toString());
+                        //salvar upload no db
+                        refUpload.setValue(upload);
+
+
+                    });
+
+
+
         })
         .addOnFailureListener( e -> {
           e.printStackTrace();
@@ -88,7 +119,7 @@ public class StorageActivity extends AppCompatActivity {
         ContentResolver cr = getContentResolver();
         return MimeTypeMap.getSingleton().getExtensionFromMimeType(cr.getType(imageUri));
     }
-
+    //Resultado do StartActivityResult()
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
