@@ -25,16 +25,6 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class UploadsFragment extends Fragment {
-    private Button btnLogout, btnStorage;
-    private DatabaseReference database = FirebaseDatabase.getInstance()
-            .getReference("uploads");
-    private ArrayList<Upload> listaUploads = new ArrayList<>();
-
-    private RecyclerView recyclerView;
-    private ImageAdapter imageAdapter;
-    public UploadsFragment() {
-        // Required empty public constructor
-    }
 
 
     @Override
@@ -42,33 +32,6 @@ public class UploadsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_uploads, container, false);
-
-        btnLogout = layout.findViewById(R.id.main_btn_logout);
-        btnStorage = findViewById(R.id.main_btn_storage);
-        recyclerView = findViewById(R.id.main_recycler);
-
-        imageAdapter = new ImageAdapter(getApplication(),listaUploads);
-        imageAdapter.setListener(new ImageAdapter.OnItemClickListener() {
-            @Override
-            public void onDeleteClick(int position) {
-                Upload upload = listaUploads.get(position);
-                deleteUpload(upload);
-            }
-
-            @Override
-            public void onUpdateClick(int position) {
-                Upload upload = listaUploads.get(position);
-
-                Intent intent = new Intent(getApplicationContext(), UpdateActivity.class);
-                // o putExtra -> envia o Upload pra outra Activity
-                intent.putExtra("upload",upload);
-                startActivity(intent);
-            }
-        });
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(imageAdapter);
-
 
 
     }
