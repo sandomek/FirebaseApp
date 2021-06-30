@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         //caso o usuario logado
         if (auth.getCurrentUser() != null){
             String email = auth.getCurrentUser().getEmail();
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(),NavigationActivity.class);
 
             //passar o e-mail p\ Main Activity
             intent.putExtra("email",email);
