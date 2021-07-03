@@ -4,7 +4,8 @@
         android:id="@+id/nav_menu_main"
         android:title="Tela Incial"
         >
-    </item><item
+    </item>
+    <item
         android:id="@+id/nav_menu_lista_imagens"
         android:title="Lista de Imagens"
         ></item>
@@ -13,6 +14,13 @@
         android:id="@+id/nav_menu_cadastro_imagem"
         android:title="Cadastro de Imagens"
         ></item>
+
+    <item
+        android:id="@+id/nav_menu_notification"
+        android:title="Notificações"
+        >
+
+    </item>
 
     <group
         android:id="@+id/nav_group_2"
