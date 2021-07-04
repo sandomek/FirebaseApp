@@ -23,6 +23,7 @@ import com.nicolas.firebaseapp.NavigationActivity;
 import com.nicolas.firebaseapp.R;
 import com.nicolas.firebaseapp.UpdateActivity;
 import com.nicolas.firebaseapp.util.App;
+import com.nicolas.firebaseapp.util.NotificationReceiver;
 
 import static com.nicolas.firebaseapp.util.App.CHANNEL_1;
 
@@ -67,6 +68,21 @@ public class NotificationFragment extends Fragment {
                      intent,
                     0
             );*/
+
+
+            // Criando um Broadcast receiver ->
+            //-> deve ser ativado EXPLICITAMENTE !
+            //-> não deve durar mais de 20 segundos
+            Intent broadcastIntent = new Intent(getContext(),
+                                    NotificationReceiver.class);
+            broadcastIntent.putExtra("toast",msg);
+
+            PendingIntent actionIntent = PendingIntent.getBroadcast(
+                    getContext(),0,broadcastIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
+
 
             /* Criar a notificação */
             Notification notification = new NotificationCompat
